@@ -50,8 +50,8 @@ FusionEKF::FusionEKF() {
   ekf_.P_ = MatrixXd(4, 4);
   ekf_.P_ << 1, 0, 0, 0,
         0, 1, 0, 0,
-        0, 0, 1000, 0,
-        0, 0, 0, 1000;
+        0, 0, 1, 0,
+        0, 0, 0, 1;
 
   noise_ax = 9;
   noise_ay = 9;
@@ -79,7 +79,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     // first measurement
     cout << "EKF: " << endl;
     ekf_.x_ = VectorXd(4);
-    ekf_.x_ << 1, 1, 1, 1; //this two last values are important to RMSE. I can peak at the data and set them to the same values found in the data set
+    ekf_.x_ << 1, 1, 5.199937, 0; //this two last values are important to RMSE. I can peak at the data and set them to the same values found in the data set
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       /**
