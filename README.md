@@ -12,7 +12,7 @@ Instructions for setting up the environment can be found [here](setup.md). After
 
 ## Implementation
 
-After I understood how the project was laid out and how the files connected to the other, I dived in to coding the filters in the `kalman_filter.cpp` and then combining them in the `FusionEKF.cpp`. If a radar measurement was received, an extended Kalman filter update was used. For that, it was necessary to calculate the jacobian and linearize the measurement function.
+After I understood how the starter code was laid out and how the files connected to the other, I dived in to coding the filters in the `kalman_filter.cpp` and then combining them in the `FusionEKF.cpp`. If a radar measurement was received, an extended Kalman filter update was used. For that, it was necessary to calculate the jacobian and linearize the measurement function.
 
 Since I used a lot of code from the quizzes, I ran into a few bugs at first which were quickly solved by just making sure the variables were consistent and that the state mean and covariance matrix were being updated by the end of each step of the process.
 
@@ -48,3 +48,7 @@ RMSE Vx: 0.303168
 RMSE Vy: 0.396266
 ```
 
+
+### Author
+
+Diogo Loreto Leal, Self-Driving Car Engineer Nanodegree Student
