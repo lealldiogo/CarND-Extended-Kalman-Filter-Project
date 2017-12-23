@@ -21,3 +21,20 @@
 3. Compile: `cmake .. && make`
    * On windows, you may need to run: `cmake .. -G "Unix Makefiles" && make`
 4. Run it: `./ExtendedKF `
+
+## Data handling
+
+Here is the main protocol that main.cpp uses for uWebSocketIO in communicating with the simulator.
+
+**INPUT**: values provided by the simulator to the c++ program
+
+["sensor_measurement"] => the measurment that the simulator observed (either lidar or radar)
+
+**OUTPUT**: values provided by the c++ program to the simulator
+
+["estimate_x"] <= kalman filter estimated position x
+["estimate_y"] <= kalman filter estimated position y
+["rmse_x"]
+["rmse_y"]
+["rmse_vx"]
+["rmse_vy"]

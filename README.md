@@ -1,44 +1,46 @@
-# Extended Kalman Filter Project Starter Code
-Self-Driving Car Engineer Nanodegree Program
+# Extended Kalman Filter Project
 
-In this project you will utilize a kalman filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower that the tolerance outlined in the project rubric.
+This project was developed as part of the Udacity Self-Driving Car Engineer Nanodegree Program. The goal was to develop an Extended Kalman Filter to combine Radar and Lidar measurements and predict a car position with a Root-mean-square Error values under 0.11, 0.11, 0.52 and 0.52 for x, y, vx and vy, respectively.
 
-This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases)
+## Overview
 
-This repository includes two files that can be used to set up and install [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) for either Linux or Mac systems. For windows you can use either Docker, VMware, or even [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) to install uWebSocketIO. Please see [this concept in the classroom](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/16cf4a78-4fc7-49e1-8621-3450ca938b77) for the required version and installation scripts.
+Kalman filters are algorithms that use noisy measurements to estimate the state of a moving object of interest by constantly predicting and updating it every time a new measurement is received. In this project two types of sensors were used (Lidar and Radar) to estimate a car position over time. Since the Radar measurement function is nonlinear, an Extended Kalman Filter had to be implemented to linearize the function and then use the linear approximation in regular Kalman filter equations.
 
-Once the install for uWebSocketIO is complete, the main program can be built and run by doing the following from the project top directory.
-
-1. mkdir build
-2. cd build
-3. cmake ..
-4. make
-5. ./ExtendedKF
-
-Tips for setting up your environment can be found [here](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/23d376c7-0195-4276-bdf0-e02f1f3c665d)
-
-Note that the programs that need to be written to accomplish the project are src/FusionEKF.cpp, src/FusionEKF.h, kalman_filter.cpp, kalman_filter.h, tools.cpp, and tools.h
-
-The program main.cpp has already been filled out, but feel free to modify it.
-
-Here is the main protcol that main.cpp uses for uWebSocketIO in communicating with the simulator.
-
-
-INPUT: values provided by the simulator to the c++ program
-
-["sensor_measurement"] => the measurement that the simulator observed (either lidar or radar)
-
-
-OUTPUT: values provided by the c++ program to the simulator
-
-["estimate_x"] <= kalman filter estimated position x
-["estimate_y"] <= kalman filter estimated position y
-["rmse_x"]
-["rmse_y"]
-["rmse_vx"]
-["rmse_vy"]
-
-
-** Environment Setup
+## Environment Setup
 
 Instructions for setting up the environment can be found [here](setup.md). After compiling, run the executable and open the simulator on the EKF & UKF project to check it out.
+
+## Implementation
+
+After I understood how the project was laid out and how the files connected to the other, I dived in to coding the filters in the `kalman_filter.cpp` and then combining them in the `FusionEKF.cpp`. If a radar measurement was received, an extended Kalman filter update was used. For that, it was necessary to calculate the jacobian and linearize the measurement function.
+
+Since I used a lot of code from the quizzes, I ran into a few bugs at first which were quickly solved by just making sure the variables were consistent and that the state mean and covariance matrix were being updated by the end of each step of the process.
+
+To initialize the mean state vector I peaked at the data set and copied the first values for `px` and `py`. The state covariance matrix and the transition matrix were initialized as identity matrices. The `noise_ax` and `noise_ay` were both set to `9`.
+
+Everything compiling and running alright, I was having this problem:
+
+![problem](kalman_filter.png)
+
+This was causing the RMSE values to raise quite a lot. Since it happened when the `py` values approached zero, I imagined that this could be a problem of angle normalization or division by zero so I decided to print some values and stop the simulation right at the point where the problem was happening. I then noticed that the `theta` value of the `y` vector used to update the state was `6.32728` right before the estimated `py` jumped from `0.220292` to `-8.11533` as shown in the picture:
+
+![y_value](problem.png)
+
+This meant I had to normalize this `theta` before actually updating the state as the simulator expects values between `pi` and `-pi`. By adding the following piece of code I managed to meet the RMSE values required to pass the project.
+
+```
+while (y(1)> M_PI) y(1)-=2.*M_PI;
+while (y(1)<-M_PI) y(1)+=2.*M_PI;
+```
+
+### Final RMSE values
+
+After that fix, I was able to finish the simulation with the following values of RMSE:
+
+```
+RMSE X: 0.0944926
+RMSE Y: 0.0845576
+RMSE Vx: 0.303168
+RMSE Vy: 0.396266
+```
+
