@@ -33,6 +33,10 @@ while (y(1)> M_PI) y(1)-=2.*M_PI;
 while (y(1)<-M_PI) y(1)+=2.*M_PI;
 ```
 
+Here a picture of the final program at the same point were the bug was happening before.
+
+![solved](solution.png)
+
 ### Final RMSE values
 
 After that fix, I was able to finish the simulation with the following values of RMSE:
